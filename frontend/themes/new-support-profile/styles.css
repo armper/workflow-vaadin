@@ -1,0 +1,6 @@
+    html {
+      --lumo-primary-color: hsl(239, 100%, 50%);
+      --lumo-primary-color-50pct: hsla(239, 100%, 50%, 0.5);
+      --lumo-primary-color-10pct: hsla(239, 100%, 50%, 0.1);
+
+    }
