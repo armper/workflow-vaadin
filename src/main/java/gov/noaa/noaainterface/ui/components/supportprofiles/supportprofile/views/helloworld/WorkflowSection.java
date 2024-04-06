@@ -20,6 +20,7 @@ public class WorkflowSection extends Div {
     private final Span progressLabel;
     private final Button nextButton, previousButton;
     private int currentPageIndex = 0;
+    private Button submitButton = new Button("Submit");
 
     public WorkflowSection(String itemName, WorkflowPage... pages) {
         this.itemName = itemName;
@@ -33,11 +34,14 @@ public class WorkflowSection extends Div {
 
         setupSectionPages();
         add(progressLabel, createNavigationLayout());
+
+        submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
     }
 
     private HorizontalLayout createNavigationLayout() {
         // Layout to hold navigation buttons
-        HorizontalLayout navigationLayout = new HorizontalLayout(previousButton, nextButton);
+        HorizontalLayout navigationLayout = new HorizontalLayout(previousButton, nextButton, submitButton);
         navigationLayout.setWidthFull();
         navigationLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
         updateButtonStates(); // Update button states based on current page
@@ -92,5 +96,21 @@ public class WorkflowSection extends Div {
 
     public String getItemName() {
         return itemName;
+    }
+
+    public int getCurrentPageIndex() {
+        return currentPageIndex;
+    }
+
+    public void hideNextButton() {
+        nextButton.setVisible(false);
+    }
+
+    public void showNextButton() {
+        nextButton.setVisible(true);
+    }
+
+    public Button getSubmitButton() {
+        return this.submitButton;
     }
 }
