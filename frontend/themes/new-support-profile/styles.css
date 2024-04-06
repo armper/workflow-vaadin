@@ -1,6 +1,6 @@
 @import "theme-editor.css";
     html {
-      --lumo-primary-color: hsl(2, 93%, 49%);
+      --lumo-primary-color: hsl(239, 100%, 50%);
       --lumo-primary-color-50pct: hsla(239, 100%, 50%, 0.5);
       --lumo-primary-color-10pct: hsla(239, 100%, 50%, 0.1);
 

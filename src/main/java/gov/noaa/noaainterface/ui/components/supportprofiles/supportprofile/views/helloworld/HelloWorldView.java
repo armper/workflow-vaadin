@@ -1,5 +1,8 @@
 package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.helloworld;
 
+import java.util.List;
+
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
@@ -12,44 +15,29 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.WorkFlow;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.WorkflowPage;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.RequestingPartnerInformation;
 
 @PageTitle("Hello World")
 @Route(value = "hello-world")
 @RouteAlias(value = "")
 public class HelloWorldView extends HorizontalLayout {
 
-    private TextField name;
-    private Button sayHello;
-
     public HelloWorldView() {
-        VerticalLayout testPageOne = new VerticalLayout();
-        name = new TextField("Your name");
-        sayHello = new Button("Say hello");
-        //<theme-editor-local-classname>
-        sayHello.addClassName("hello-world-view-button-1");
-        sayHello.addClickShortcut(Key.ENTER);
-        sayHello.addClickListener(e -> {
-            Notification.show("Hello, " + name.getValue());
-        });
+        List<Partner> partners = List.of();
+        WorkflowPage eventPage1 = new WorkflowPage("Requesting Partner Information",
+                new RequestingPartnerInformation(partners));
+        eventPage1.add();
 
-        VerticalLayout testPageTwo = new VerticalLayout();
-        testPageTwo.add(new Button("Test button"));
+        WorkflowPage eventPage2 = new WorkflowPage("Event Information", new VerticalLayout(new Span("Event Info")));
+        WorkflowSection eventWorflowSection = new WorkflowSection("Event", eventPage1, eventPage2);
 
-        VerticalLayout testPageThree = new VerticalLayout();
-        testPageThree.add(new Span(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc tincidunt tincidunt."),
-                new Button("Test button"));
+        WorkflowPage impactPage1 = new WorkflowPage("Impact Information", new VerticalLayout(new Span("Impact Info")));
+        WorkflowPage impactPage2 = new WorkflowPage("Impact Information", new VerticalLayout(new Span("Impact Info")));
 
-        VerticalLayout testPageFour = new VerticalLayout();
-        testPageFour.add(new Span(
-                "Donec auctor, nunc nec fermentum ultricies, nunc sapien ultricies nunc, nec fermentum nunc sapien nec nunc."),
-                new Button("Test button"));
+        WorkflowSection impactWorkflowSection = new WorkflowSection("Impact", impactPage1, impactPage2);
 
-        testPageOne.add(name, sayHello);
-
-        WorkFlow workFlow = new WorkFlow("Requesting Partner Information",
-                "Contact information for the partner who put in the request for IDSS for an event. If you do not see the partner listed, go to the Contacts page and enter them as a new contact.",
-                "Event", testPageOne, testPageTwo, testPageThree, testPageFour);
+        WorkFlow workFlow = new WorkFlow(eventWorflowSection, impactWorkflowSection);
 
         add(workFlow);
     }
