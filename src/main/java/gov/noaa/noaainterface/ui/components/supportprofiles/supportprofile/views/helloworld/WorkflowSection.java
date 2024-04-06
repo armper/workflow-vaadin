@@ -30,6 +30,7 @@ public class WorkflowSection extends Div {
         this.nextButton = new Button("Next", event -> nextPage());
         this.previousButton = new Button("Previous", event -> previousPage());
         this.submitButton = new Button("Submit", event -> fireEvent(new SubmitEvent(this)));
+        submitButton.setVisible(false);
 
         nextButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         previousButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
