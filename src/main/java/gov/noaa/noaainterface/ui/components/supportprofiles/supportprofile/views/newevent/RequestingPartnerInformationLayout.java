@@ -14,8 +14,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.helloworld.Partner;
-
 public class RequestingPartnerInformationLayout extends VerticalLayout {
     private Partner selectedPartner;
 

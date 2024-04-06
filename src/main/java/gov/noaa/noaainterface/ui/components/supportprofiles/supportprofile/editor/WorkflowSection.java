@@ -1,5 +1,5 @@
 
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.helloworld;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor;
 
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -7,12 +7,11 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.shared.Registration;
 
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.PageChangeEvent;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.WorkflowPage;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.events.PageChangeEvent;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.events.SubmitEvent;
 
 public class WorkflowSection extends Div {
 

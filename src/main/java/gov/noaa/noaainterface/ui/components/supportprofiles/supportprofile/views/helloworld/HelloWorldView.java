@@ -11,6 +11,8 @@ import com.vaadin.flow.router.RouteAlias;
 
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.WorkFlow;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.WorkflowPage;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.WorkflowSection;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.Partner;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.RequestingPartnerInformationLayout;
 
 @PageTitle("Hello World")
@@ -35,6 +37,7 @@ public class HelloWorldView extends HorizontalLayout {
         Partner partner5 = new Partner("tom@brady.com", "Tom", "Brady", "Admin", "San Mateo", "111-111-1123");
 
         List<Partner> partners = List.of(partner1, partner2, partner3, partner4, partner5);
+
         WorkflowPage requestingPartnerInformationPage = new WorkflowPage("Requesting Partner Information",
                 new RequestingPartnerInformationLayout(partners));
         requestingPartnerInformationPage.add();

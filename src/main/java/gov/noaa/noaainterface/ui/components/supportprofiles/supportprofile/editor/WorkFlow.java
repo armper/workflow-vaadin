@@ -6,8 +6,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.helloworld.WorkflowSection;
-
 public class WorkFlow extends VerticalLayout {
 
     private final WorkflowSection[] sections;

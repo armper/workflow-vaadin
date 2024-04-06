@@ -1,8 +1,8 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.events;
 
 import com.vaadin.flow.component.ComponentEvent;
 
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.helloworld.WorkflowSection;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.WorkflowSection;
 
 public class PageChangeEvent extends ComponentEvent<WorkflowSection> {
     private final int currentPageIndex;
