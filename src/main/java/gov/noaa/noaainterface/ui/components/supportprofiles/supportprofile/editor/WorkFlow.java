@@ -19,9 +19,9 @@ public class WorkFlow extends VerticalLayout {
     public WorkFlow(WorkflowSection... sections) {
         this.sections = sections;
         this.sectionContainer = new Div();
+        sectionContainer.setWidthFull(); 
         this.progressBars = new ProgressBar[sections.length]; // Initialize the array
         this.progressLabels = new Span[sections.length]; // Initialize the label array
-
 
         for (int i = 0; i < sections.length; i++) {
             // WorkflowSection section = sections[i]; // Original
@@ -36,6 +36,7 @@ public class WorkFlow extends VerticalLayout {
             Span progressLabel = new Span(
                     String.format("%s Information %d of %d", section.getItemName(), 1, section.getTotalPages()));
             progressLabels[i] = progressLabel;
+            progressLabel.getStyle().set("white-space", "nowrap");
 
             section.addPageChangeListener(event -> {
                 double progress = (event.getCurrentPageIndex() + 1) / (double) event.getTotalPages();
@@ -44,18 +45,22 @@ public class WorkFlow extends VerticalLayout {
                 updateSubmitButtonVisibility();
             });
 
-            section.getSubmitButton().addClickListener(event -> submitCurrentSection());
+            section.addSubmitListener(submitListener -> {
+                submitCurrentSection();
+            });
 
         }
 
         initializeWorkflow();
+
     }
 
     private void initializeWorkflow() {
         if (sections.length > 0) {
             addSectionToView(0);
         }
-        VerticalLayout progressBarLayout = new VerticalLayout();
+        HorizontalLayout progressBarLayout = new HorizontalLayout();
+        progressBarLayout.setWidthFull();
         for (int i = 0; i < sections.length; i++) {
             // For each section, add a HorizontalLayout containing the label and the
             // progress bar
@@ -72,6 +77,7 @@ public class WorkFlow extends VerticalLayout {
         if (sectionIndex < sections.length) {
             WorkflowSection section = sections[sectionIndex];
             sectionContainer.add(section);
+            section.setWidthFull();
         }
         // Update progress labels for all sections
         for (int i = 0; i < sections.length; i++) {
@@ -84,7 +90,7 @@ public class WorkFlow extends VerticalLayout {
                         currentSection.getTotalPages()));
             } else {
                 // For other sections, show only the item name
-                progressLabels[i].setText(sections[i].getItemName());
+                progressLabels[i].setText(sections[i].getItemName()+"s");
             }
         }
     }

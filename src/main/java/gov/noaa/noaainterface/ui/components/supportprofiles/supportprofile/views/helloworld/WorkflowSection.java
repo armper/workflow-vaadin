@@ -6,6 +6,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.shared.Registration;
@@ -20,7 +21,7 @@ public class WorkflowSection extends Div {
     private final Span progressLabel;
     private final Button nextButton, previousButton;
     private int currentPageIndex = 0;
-    private Button submitButton = new Button("Submit");
+    private Button submitButton;
 
     public WorkflowSection(String itemName, WorkflowPage... pages) {
         this.itemName = itemName;
@@ -28,6 +29,7 @@ public class WorkflowSection extends Div {
         this.progressLabel = new Span();
         this.nextButton = new Button("Next", event -> nextPage());
         this.previousButton = new Button("Previous", event -> previousPage());
+        this.submitButton = new Button("Submit", event -> fireEvent(new SubmitEvent(this)));
 
         nextButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         previousButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
@@ -39,11 +41,24 @@ public class WorkflowSection extends Div {
 
     }
 
+    public Registration addSubmitListener(ComponentEventListener<SubmitEvent> listener) {
+        return addListener(SubmitEvent.class, listener);
+    }
+
     private HorizontalLayout createNavigationLayout() {
+        // Spacer to push buttons to the right
+        Span spacer = new Span();
+        spacer.setWidthFull();
+
         // Layout to hold navigation buttons
-        HorizontalLayout navigationLayout = new HorizontalLayout(previousButton, nextButton, submitButton);
+        HorizontalLayout navigationLayout = new HorizontalLayout(previousButton, spacer, nextButton, submitButton);
         navigationLayout.setWidthFull();
-        navigationLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+        navigationLayout.expand(spacer); // Make the spacer take up all extra space
+
+        // Ensure buttons are aligned correctly
+        navigationLayout.setVerticalComponentAlignment(FlexComponent.Alignment.END, nextButton, submitButton);
+        navigationLayout.setVerticalComponentAlignment(FlexComponent.Alignment.START, previousButton);
+
         updateButtonStates(); // Update button states based on current page
         return navigationLayout;
     }

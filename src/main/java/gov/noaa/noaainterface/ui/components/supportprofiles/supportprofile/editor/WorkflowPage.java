@@ -10,6 +10,8 @@ public class WorkflowPage extends VerticalLayout {
     public WorkflowPage(String title, Component content) {
         this.title = title;
 
+        setHeight("75vh");
+
         add(content);
     }
 
