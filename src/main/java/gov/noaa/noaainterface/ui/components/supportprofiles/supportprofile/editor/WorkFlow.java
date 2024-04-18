@@ -10,9 +10,9 @@ public class WorkFlow extends VerticalLayout {
 
     private final WorkflowSection[] sections;
     private int currentSectionIndex = 0;
-    private final Div sectionContainer; // Container for the current section
-    private final ProgressBar[] progressBars; // Array to hold a ProgressBar for each section
-    private final Span[] progressLabels; // Array to hold a label for each section
+    private final Div sectionContainer;
+    private final ProgressBar[] progressBars;
+    private final Span[] progressLabels;
 
     public WorkFlow(WorkflowSection... sections) {
         this.sections = sections;
@@ -79,7 +79,7 @@ public class WorkFlow extends VerticalLayout {
             WorkflowSection section = sections[sectionIndex];
             sectionContainer.add(section);
             section.setWidthFull();
-            section.setVisible(true); // Make sure the section is visible when added
+            section.setVisible(true);
         }
         updateProgressIndicators(sectionIndex);
     }
@@ -101,7 +101,6 @@ public class WorkFlow extends VerticalLayout {
             currentSectionIndex++;
             addSectionToView(currentSectionIndex);
         } else {
-            // Final section's last page submitted
             currentSection.getSubmitButton().setEnabled(false);
         }
         updateSubmitButtonVisibility();

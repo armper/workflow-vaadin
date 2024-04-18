@@ -1,7 +1,9 @@
 package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
 
 import java.util.List;
+import java.util.function.Consumer;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -14,8 +16,13 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-public class RequestingPartnerInformationLayout extends VerticalLayout {
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.interfaces.ValidatableForm;
+
+public class RequestingPartnerInformationLayout extends VerticalLayout implements ValidatableForm<Partner> {
     private Partner selectedPartner;
+    private final ComboBox<Partner> partnerSearchComboBox;
+
+    private Consumer<Partner> valueChangeListener;
 
     public RequestingPartnerInformationLayout(List<Partner> partners) {
         // Instructions and contacts information
@@ -24,13 +31,15 @@ public class RequestingPartnerInformationLayout extends VerticalLayout {
         Span contactsPageInfoSpan = new Span(
                 "If you do not see the partner listed, or if you need to update their information, go to the Contacts page.");
 
-        ComboBox<Partner> partnerSearchComboBox = new ComboBox<>();
+        partnerSearchComboBox = new ComboBox<>();
         partnerSearchComboBox.setWidth("65%");
         partnerSearchComboBox.setMaxWidth("65%");
         partnerSearchComboBox.setItems(partners);
         partnerSearchComboBox.setItemLabelGenerator(partner -> partner.firstName() + " " + partner.lastName());
         partnerSearchComboBox.setRenderer(new ComponentRenderer<>(this::createPartnerComponent));
         partnerSearchComboBox.setPlaceholder("Search by name or email address");
+
+        partnerSearchComboBox.setRequired(true);
 
         // Component to display selected partner details
         VerticalLayout partnerDetailsLayout = new VerticalLayout();
@@ -42,6 +51,9 @@ public class RequestingPartnerInformationLayout extends VerticalLayout {
                 .addValueChangeListener(event -> {
                     updatePartnerDetails(event.getValue(), partnerDetailsLayout);
                     selectedPartner = event.getValue();
+                    if (valueChangeListener != null) {
+                        valueChangeListener.accept(selectedPartner);
+                    }
                 });
 
         Div comboBoxWrapper = new Div(partnerSearchComboBox, partnerDetailsLayout);
@@ -107,4 +119,36 @@ public class RequestingPartnerInformationLayout extends VerticalLayout {
     public Partner getSelectedPartner() {
         return selectedPartner;
     }
+
+    @Override
+    public boolean isValid() {
+        return selectedPartner != null;
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return "Please select a partner.";
+    }
+
+    @Override
+    public Component getComponent() {
+        return this;
+    }
+
+    @Override
+    public void showErrors() {
+        partnerSearchComboBox.setInvalid(true);
+        partnerSearchComboBox.setErrorMessage(getErrorMessage());
+    }
+
+    @Override
+    public Partner getData() {
+        return selectedPartner;
+    }
+
+    @Override
+    public void addValueChangeListener(Consumer<Partner> object) {
+        valueChangeListener = object;
+    }
+
 }

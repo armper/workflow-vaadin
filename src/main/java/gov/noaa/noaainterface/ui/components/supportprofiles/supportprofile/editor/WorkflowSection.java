@@ -78,9 +78,11 @@ public class WorkflowSection extends Div {
 
     public void previousPage() {
         if (currentPageIndex > 0) {
+            WorkflowPage<?> workflowPage = pages[currentPageIndex];
+
             currentPageIndex--;
             updateSectionView();
-            fireEvent(new PageChangeEvent(this, currentPageIndex, pages.length)); // Include progress info
+            fireEvent(new PageChangeEvent<>(this, currentPageIndex, pages.length, workflowPage.getData()));
         }
     }
 
@@ -89,11 +91,20 @@ public class WorkflowSection extends Div {
     }
 
     public void nextPage() {
-        if (currentPageIndex < pages.length - 1) {
-            currentPageIndex++;
-            updateSectionView();
-            fireEvent(new PageChangeEvent(this, currentPageIndex, pages.length)); // Include progress info
+
+        // check if page is valid
+        WorkflowPage<?> workflowPage = pages[currentPageIndex];
+        if (workflowPage.isValid()) {
+            if (currentPageIndex < pages.length - 1) {
+                currentPageIndex++;
+                updateSectionView();
+                fireEvent(new PageChangeEvent<>(this, currentPageIndex, pages.length, workflowPage.getData()));
+            }
+        } else {
+            workflowPage.showErrors();
+
         }
+
     }
 
     private void updateSectionView() {
@@ -101,8 +112,10 @@ public class WorkflowSection extends Div {
         add(pages[currentPageIndex], progressLabel, createNavigationLayout());
     }
 
-    public Registration addPageChangeListener(ComponentEventListener<PageChangeEvent> listener) {
-        return addListener(PageChangeEvent.class, listener);
+    public Registration addPageChangeListener(ComponentEventListener<PageChangeEvent<?>> listener) {
+        @SuppressWarnings("unchecked")
+        Registration registration = addListener((Class<PageChangeEvent<?>>) (Class<?>) PageChangeEvent.class, listener);
+        return registration;
     }
 
     public int getTotalPages() {
