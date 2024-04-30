@@ -3,6 +3,10 @@ package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.view
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
 
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -12,95 +16,120 @@ import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class ImpactTabs extends VerticalLayout {
+    private final Logger logger = org.slf4j.LoggerFactory.getLogger(ImpactTabs.class);
+
     private Tabs tabs = new Tabs();
     private Map<Tab, VerticalLayout> tabContents = new HashMap<>();
     private VerticalLayout contentContainer = new VerticalLayout();
+    private Map<UUID, ImpactCard> impactCardMap = new HashMap<>();
 
     public ImpactTabs() {
         add(tabs, contentContainer);
         contentContainer.setSizeFull();
+        tabs.addSelectedChangeListener(event -> switchTab());
+    }
 
-        tabs.addSelectedChangeListener(event -> {
+    private void switchTab() {
+        contentContainer.removeAll();
+        Optional.ofNullable(tabContents.get(tabs.getSelectedTab()))
+                .ifPresent(contentContainer::add);
+    }
+
+    public void addOrUpdateImpact(Impact impact) {
+        ImpactCard existingCard = impactCardMap.get(impact.getId());
+        if (existingCard != null) {
+            existingCard.setImpact(impact);
+        } else {
+            manageNewImpact(impact);
+        }
+    }
+
+    private void manageNewImpact(Impact impact) {
+        String tabName = impact.getWeatherHazard();
+        Optional<Tab> existingTab = findTabByName(tabName);
+        VerticalLayout content = existingTab.map(tabContents::get).orElseGet(VerticalLayout::new);
+
+        if (!existingTab.isPresent()) {
+            Tab newTab = new Tab(tabName);
+            tabs.add(newTab);
+            tabContents.put(newTab, content);
+            existingTab = Optional.of(newTab);
+        }
+
+        ImpactCard newCard = new ImpactCard(impact);
+        content.add(newCard);
+        impactCardMap.put(impact.getId(), newCard);
+        styleImpactCard(content, newCard);
+        attachEventHandlers(newCard, content, existingTab.get());
+
+        if (tabs.getSelectedTab() == null || tabs.getSelectedTab() == existingTab.get()) {
             contentContainer.removeAll();
-            VerticalLayout selectedContent = tabContents.get(tabs.getSelectedTab());
-            if (selectedContent != null) {
-                contentContainer.add(selectedContent);
+            contentContainer.add(content);
+            tabs.setSelectedTab(existingTab.get());
+        }
+    }
+
+    private void styleImpactCard(VerticalLayout container, ImpactCard card) {
+        if (container.getComponentCount() % 2 != 0) {
+            card.addClassName(LumoUtility.Background.CONTRAST_10);
+        } else {
+            card.removeClassName(LumoUtility.Background.CONTRAST_10);
+        }
+    }
+
+    private void attachEventHandlers(ImpactCard card, VerticalLayout container, Tab tab) {
+        card.getDeleteButton().addClickListener(event -> removeCard(card, container, tab));
+        card.getEditButton().addClickListener(event -> {
+            if (tabExists(tab)) {
+                fireEvent(new ImpactCardEditEvent(this, card));
+            } else {
+                logger.debug("Tab does not exist anymore when trying to edit.");
             }
         });
     }
 
-    public void add(String tabName, ImpactCard impactCard) {
-        Optional<Tab> existingTab = findTabByName(tabName);
-        VerticalLayout contentContainer;
+    private void removeCard(ImpactCard card, VerticalLayout container, Tab tab) {
+        container.remove(card);
+        impactCardMap.remove(card.getImpactId());
+        if (container.getComponentCount() == 0) {
+            removeTab(tab);
+        }
+    }
 
-        if (existingTab.isPresent()) {
-            contentContainer = tabContents.get(existingTab.get());
+    private void removeTab(Tab tab) {
+        if (tabExists(tab)) {
+            logger.debug("Removing tab: " + tab.getLabel());
+            tabs.remove(tab);
+            Optional.ofNullable(tabContents.remove(tab)).ifPresent(VerticalLayout::removeAll);
+            selectNextAvailableTab();
         } else {
-            Tab newTab = new Tab(tabName);
-            contentContainer = new VerticalLayout();
-            tabContents.put(newTab, contentContainer);
-            tabs.add(newTab);
+            logger.debug("Attempted to remove a non-existent or null tab.");
         }
+    }
 
-        contentContainer.add(impactCard);
-        styleImpactCard(contentContainer, impactCard);
-        attachEventHandlers(impactCard, contentContainer, existingTab.orElse(null));
+    private void selectNextAvailableTab() {
+        tabs.getChildren().filter(Tab.class::isInstance).findFirst().map(Tab.class::cast)
+                .ifPresentOrElse(this::switchToTab, contentContainer::removeAll);
+    }
 
-        if (tabs.getSelectedTab() == null || tabs.getSelectedTab() == existingTab.orElse(null)) {
-            this.contentContainer.removeAll();
-            this.contentContainer.add(contentContainer);
-            tabs.setSelectedTab(existingTab.orElseGet(() -> new Tab(tabName)));
-        }
+    private void switchToTab(Tab tab) {
+        tabs.setSelectedTab(tab);
+        contentContainer.removeAll();
+        Optional.ofNullable(tabContents.get(tab)).ifPresent(contentContainer::add);
+    }
+
+    private boolean tabExists(Tab tab) {
+        return tabs.getChildren().filter(Tab.class::isInstance).map(Tab.class::cast).collect(Collectors.toList())
+                .contains(tab);
+    }
+
+    private Optional<Tab> findTabByName(String tabName) {
+        return tabs.getChildren().filter(Tab.class::isInstance).map(Tab.class::cast)
+                .filter(tab -> tab.getLabel().equals(tabName)).findFirst();
     }
 
     public Registration addImpactCardEditListener(ComponentEventListener<ImpactCardEditEvent> listener) {
         return addListener(ImpactCardEditEvent.class, listener);
     }
 
-    private void styleImpactCard(VerticalLayout container, ImpactCard card) {
-        if (container.getComponentCount() % 2 != 0) { // Check if the count is odd
-            card.addClassName(LumoUtility.Background.CONTRAST_10); // Apply darker background
-        } else {
-            card.removeClassName(LumoUtility.Background.CONTRAST_10); // Ensure normal background
-        }
-    }
-
-    private void attachEventHandlers(ImpactCard impactCard, VerticalLayout contentContainer, Tab tab) {
-        // Handle delete button
-        impactCard.getDeleteButton().addClickListener(event -> {
-            contentContainer.remove(impactCard);
-            if (contentContainer.getComponentCount() == 0) {
-                removeTab(tab);
-            }
-        });
-
-        // Handle edit button
-        impactCard.getEditButton().addClickListener(event -> {
-            fireEvent(new ImpactCardEditEvent(this, impactCard));
-        });
-    }
-
-    private void removeTab(Tab tab) {
-        tabs.remove(tab);
-
-        if (tabs.getSelectedTab() == null && !tabs.getChildren().findFirst().isEmpty()) {
-            tabs.getChildren()
-                    .filter(Tab.class::isInstance)
-                    .map(Tab.class::cast)
-                    .findFirst()
-                    .ifPresent(nextTab -> {
-                        tabs.setSelectedTab(nextTab);
-                        contentContainer.removeAll();
-                        contentContainer.add(tabContents.get(nextTab));
-                    });
-        }
-    }
-
-    private Optional<Tab> findTabByName(String tabName) {
-        return tabs.getChildren()
-                .filter(Tab.class::isInstance)
-                .map(Tab.class::cast)
-                .filter(tab -> tab.getLabel().equals(tabName))
-                .findFirst();
-    }
 }

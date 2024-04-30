@@ -1,6 +1,7 @@
 package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -40,24 +41,23 @@ public class ThresholdsDialog extends Dialog {
 
     private final Binder<Impact> impactBinder = new Binder<>(Impact.class);
     private Consumer<Impact> saveImpactListener;
-    private Impact impact = new Impact();
-    private final List<Impact> impacts;
+    private Impact impact;
+    private final Set<Impact> impacts;
     private final Div pageContainer = new Div();
 
     public void setSaveImpactListener(Consumer<Impact> saveImpactListener) {
         this.saveImpactListener = saveImpactListener;
     }
 
-    public void setTitle(String title) {
-        this.title.setText("Impact for " + title);
-    }
-
     public void setImpact(Impact impact) {
         this.impact = impact;
         impactBinder.readBean(impact);
+
+        title.setText("Impact for " + impact.getWeatherHazard());
+
     }
 
-    public ThresholdsDialog(List<Impact> impacts) {
+    public ThresholdsDialog(Set<Impact> impacts) {
         this.impacts = impacts;
         impactBinder.setBean(impact);
         setupBinder();
@@ -89,15 +89,15 @@ public class ThresholdsDialog extends Dialog {
         String selectedLevel = recentLevel.getValue();
         String selectedRisk = recentRisk.getValue();
 
-        List<Impact> filtered = impacts.stream()
+        Set<Impact> filtered = impacts.stream()
                 .filter(impact -> (impact.toString().toLowerCase().contains(searchText)) &&
                         (selectedLevel == null || impact.getLevel().equals(selectedLevel)) &&
                         (selectedRisk == null || impact.getRisk().equals(selectedRisk)))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         updateFilteredImpacts(filtered);
     }
 
-    private void updateFilteredImpacts(List<Impact> filteredImpacts) {
+    private void updateFilteredImpacts(Set<Impact> filteredImpacts) {
         filteredImpactsLayout.removeAll();
         filteredImpacts.forEach(impact -> {
             ImpactSummary impactSummary = new ImpactSummary(impact.getLevel(), impact.getRisk(),
@@ -125,7 +125,7 @@ public class ThresholdsDialog extends Dialog {
         });
 
         discardImpactButton.addClickListener(e -> {
-            this.impact = new Impact();
+            this.impact = new Impact(this.impact.getWeatherHazard());
             impactBinder.readBean(impact);
             close();
         });

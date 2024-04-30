@@ -1,7 +1,9 @@
 package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import com.vaadin.flow.component.Component;
@@ -29,9 +31,7 @@ public class WeatherThresholdLayout extends VerticalLayout implements Validatabl
 
     private final ImpactTabs impactTabs = new ImpactTabs();
 
-    List<Impact> impacts = new ArrayList<>();
-
-    private String selectedWeatherHazard;
+    Set<Impact> impacts = new HashSet<>();
 
     public WeatherThresholdLayout(List<String> initialWeatherHazards) {
         thresholdsDialog = new ThresholdsDialog(impacts);
@@ -51,10 +51,8 @@ public class WeatherThresholdLayout extends VerticalLayout implements Validatabl
 
     private void onSaveImpactListener(Impact impact) {
         impacts.add(impact);
-        impactTabs.add(weatherHazardComboBox.getValue(), new ImpactCard(impact));
+        impactTabs.addOrUpdateImpact(impact);
 
-        // Reset the ComboBox after adding an impact. But also store what was selected.
-        selectedWeatherHazard = weatherHazardComboBox.getValue();
         weatherHazardComboBox.clear();
 
         thresholdsDialog = new ThresholdsDialog(impacts);
@@ -89,15 +87,13 @@ public class WeatherThresholdLayout extends VerticalLayout implements Validatabl
                 onSaveImpactListener(newImpact);
             });
 
-            thresholdsDialog.setTitle(selectedWeatherHazard);
             thresholdsDialog.open();
         });
 
     }
 
     private void showThresholdsModal() {
-        thresholdsDialog.setTitle(weatherHazardComboBox.getValue());
-        thresholdsDialog.setImpact(new Impact());
+        thresholdsDialog.setImpact(new Impact(weatherHazardComboBox.getValue()));
         thresholdsDialog.open();
     }
 

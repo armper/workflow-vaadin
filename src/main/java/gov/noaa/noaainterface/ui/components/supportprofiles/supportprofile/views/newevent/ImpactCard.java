@@ -1,5 +1,7 @@
 package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
 
+import java.util.UUID;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
@@ -16,7 +18,7 @@ public class ImpactCard extends VerticalLayout {
     private final Button editButton = new Button("Edit");
     private final Button deleteButton = new Button("Delete");
 
-    private Impact impact = new Impact();
+    private Impact impact;
 
     public ImpactCard(Impact impact) {
         this.impact = impact;
@@ -61,6 +63,18 @@ public class ImpactCard extends VerticalLayout {
 
     public void setImpact(Impact impact) {
         this.impact = impact;
+        updateDisplay();
+    }
+
+    private void updateDisplay() {
+        levelSpan.setText(impact.getLevel() + ":");
+        riskSpan.setText(impact.getRisk());
+        impactStatementSpan.setText(impact.getImpactStatement());
+        actionsSpan.setText(impact.getActions());
+    }
+
+    public UUID getImpactId() {
+        return impact.getId();
     }
 
 }
