@@ -1,9 +1,18 @@
 package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -15,10 +24,7 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
-
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class ThresholdsDialog extends Dialog {
     private final H1 title = new H1();
@@ -30,20 +36,21 @@ public class ThresholdsDialog extends Dialog {
     private final TextField customLabel = new TextField("Custom Label");
     private final TextArea impactStatement = new TextArea("Impact Statement");
     private final TextArea actions = new TextArea("Actions");
-    private final Tabs thresholdsTabs = new Tabs();
-    private final ComboBox<String> addThresholds = new ComboBox<>("Add Thresholds");
+    private TabManager tabManager = new TabManager(); // Use the new TabManager component
+
     private final Button saveImpactButton = new Button("Save Impact");
     private final Button discardImpactButton = new Button("Discard Impact");
+
     private final VerticalLayout filteredImpactsLayout = new VerticalLayout();
     private final VerticalLayout recentlyUsedImpacts;
     private final VerticalLayout mainLayout = new VerticalLayout();
-    private Paragraph addThresholdsInstructions = new Paragraph(
-            "Search by element ('wind', 'dewpoint', 'probability'...) or by category ('winter weather, 'fire weather'...)");
-    private Button addTab;
+
     private final Binder<Impact> impactBinder = new Binder<>(Impact.class);
     private Consumer<Impact> saveImpactListener;
     private Impact impact = new Impact();
     private final List<Impact> impacts;
+    private final Map<Tab, Component> tabsToPages = new HashMap<>();
+    private final Div pageContainer = new Div();
 
     public void setSaveImpactListener(Consumer<Impact> saveImpactListener) {
         this.saveImpactListener = saveImpactListener;
@@ -60,6 +67,7 @@ public class ThresholdsDialog extends Dialog {
 
         recentlyUsedImpacts = new VerticalLayout(searchRecentImpacts, new HorizontalLayout(recentLevel, recentRisk),
                 filteredImpactsLayout);
+        recentlyUsedImpacts.addClassName(LumoUtility.Background.CONTRAST_5);
         filteredImpactsLayout.setHeight("50vh");
         filteredImpactsLayout.getStyle().set("overflow-y", "auto");
 
@@ -72,6 +80,7 @@ public class ThresholdsDialog extends Dialog {
 
         configureComponents();
         layoutComponents();
+
     }
 
     private void filterImpacts() {
@@ -96,6 +105,8 @@ public class ThresholdsDialog extends Dialog {
                 impactBinder.setBean(impact);
             });
             filteredImpactsLayout.add(impactSummary);
+            Hr hr = new Hr();
+            filteredImpactsLayout.add(hr);
         });
     }
 
@@ -112,6 +123,12 @@ public class ThresholdsDialog extends Dialog {
                 close();
             }
         });
+
+        discardImpactButton.addClickListener(e -> {
+            this.impact = new Impact();
+            impactBinder.readBean(impact);
+            close();
+        });
     }
 
     private void configureComponents() {
@@ -125,7 +142,6 @@ public class ThresholdsDialog extends Dialog {
         risk.setItems("Little to none", "Minor", "Moderate", "Significant", "Extreme", "Custom");
 
         risk.addValueChangeListener(event -> customLabel.setVisible("Custom".equals(risk.getValue())));
-
         customLabel.setVisible(false);
         customLabel.addValueChangeListener(event -> {
             String value = event.getValue();
@@ -135,24 +151,24 @@ public class ThresholdsDialog extends Dialog {
             }
         });
 
-        addTab = new Button(new Icon(VaadinIcon.PLUS));
-        addTab.addClickListener(e -> addNewTab());
-        thresholdsTabs.add(new Tab("Set 1"));
     }
 
     private void layoutComponents() {
         HorizontalLayout levelRiskLayout = new HorizontalLayout(level, risk, customLabel);
-        HorizontalLayout tabsWithAddButtonLayout = new HorizontalLayout(thresholdsTabs, addTab);
+        levelRiskLayout.setWidthFull();
         HorizontalLayout buttonBar = new HorizontalLayout(discardImpactButton, saveImpactButton);
+        buttonBar.setWidthFull();
         buttonBar.setJustifyContentMode(JustifyContentMode.END); // Flush right
 
-        mainLayout.add(levelRiskLayout, impactStatement, actions, tabsWithAddButtonLayout, addThresholds,
-                addThresholdsInstructions);
+        // Add the pageContainer below the tabs within the main layout
+        mainLayout.add(levelRiskLayout, impactStatement, actions, tabManager, pageContainer);
+        mainLayout.setWidth("100%");
+
+        // Set the width of pageContainer to match the main layout if necessary
+        pageContainer.setWidthFull();
+
+        // Add the main layout to the Dialog
         add(title, new HorizontalLayout(recentlyUsedImpacts, mainLayout), buttonBar);
     }
 
-    private void addNewTab() {
-        int numTabs = thresholdsTabs.getComponentCount();
-        thresholdsTabs.add(new Tab("Set " + (numTabs + 1)));
-    }
 }
