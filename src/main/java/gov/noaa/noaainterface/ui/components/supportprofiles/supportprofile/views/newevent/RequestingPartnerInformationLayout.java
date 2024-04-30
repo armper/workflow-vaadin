@@ -1,6 +1,6 @@
 package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.function.Consumer;
 
 import com.vaadin.flow.component.Component;
@@ -9,8 +9,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexDirection;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -24,7 +22,7 @@ public class RequestingPartnerInformationLayout extends VerticalLayout implement
 
     private Consumer<Partner> valueChangeListener;
 
-    public RequestingPartnerInformationLayout(List<Partner> partners) {
+    public RequestingPartnerInformationLayout(Collection<Partner> partners) {
         // Instructions and contacts information
         Span partnerRequestInstructionsSpan = new Span(
                 "Contact information for the partner who put in the request for IDSS for an event.");
@@ -36,7 +34,7 @@ public class RequestingPartnerInformationLayout extends VerticalLayout implement
         partnerSearchComboBox.setMaxWidth("65%");
         partnerSearchComboBox.setItems(partners);
         partnerSearchComboBox.setItemLabelGenerator(partner -> partner.firstName() + " " + partner.lastName());
-        partnerSearchComboBox.setRenderer(new ComponentRenderer<>(this::createPartnerComponent));
+        partnerSearchComboBox.setRenderer(new ComponentRenderer<>(PartnerComponentUtil::createPartnerComponent));
         partnerSearchComboBox.setPlaceholder("Search by name or email address");
 
         partnerSearchComboBox.setRequired(true);
@@ -64,27 +62,6 @@ public class RequestingPartnerInformationLayout extends VerticalLayout implement
 
         add(partnerRequestInstructionsSpan, contactsPageInfoSpan, comboBoxWrapper);
         setAlignItems(Alignment.CENTER);
-    }
-
-    private FlexLayout createPartnerComponent(Partner person) {
-        FlexLayout wrapper = new FlexLayout();
-        wrapper.setAlignItems(Alignment.CENTER);
-        wrapper.setFlexDirection(FlexDirection.ROW);
-        wrapper.setWidthFull();
-
-        Div nameDiv = new Div(new Span(person.firstName() + " " + person.lastName()));
-        nameDiv.getStyle().set("flex", "1").set("margin-right", "auto");
-
-        Div jobTitleDiv = new Div(new Span(person.jobTitle()));
-        jobTitleDiv.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL);
-        jobTitleDiv.getStyle().set("flex", "1").set("margin-right", "auto");
-
-        Div cityDiv = new Div(new Span(person.city()));
-        cityDiv.addClassNames(LumoUtility.TextColor.TERTIARY, LumoUtility.FontSize.SMALL);
-        cityDiv.getStyle().set("flex", "1");
-
-        wrapper.add(nameDiv, jobTitleDiv, cityDiv);
-        return wrapper;
     }
 
     private void updatePartnerDetails(Partner selectedPartner, VerticalLayout detailsLayout) {
@@ -151,4 +128,5 @@ public class RequestingPartnerInformationLayout extends VerticalLayout implement
         valueChangeListener = object;
     }
 
+ 
 }

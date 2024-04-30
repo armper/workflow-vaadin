@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -22,6 +25,7 @@ import elemental.json.JsonObject;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.interfaces.ValidatableForm;
 
 public class AreaOfConcernLayout extends VerticalLayout implements ValidatableForm<AreaOfConcern> {
+    private static final Logger logger = LoggerFactory.getLogger(AreaOfConcernLayout.class);
 
     private Binder<AreaOfConcern> binder = new Binder<>(AreaOfConcern.class);
     private Consumer<AreaOfConcern> valueChangeListener;
@@ -34,20 +38,22 @@ public class AreaOfConcernLayout extends VerticalLayout implements ValidatableFo
     private TextField latitude = new TextField("Latitude");
     private TextField longitude = new TextField("Longitude");
 
+    private TextField polygonCoordinates = new TextField("");
+
     private ComboBox<String> radius = new ComboBox<>("Radius");
-    private ComboBox<String> countyComboBox = new ComboBox<>("County/Parish/Borough");
+    private ComboBox<County> countyComboBox = new ComboBox<>("County/Parish/Borough");
 
     private Icon editAddressIcon = new Icon(VaadinIcon.EDIT);
 
     private AddressDialog eventAddressDialog;
-    private final Collection<String> counties;
+    private final Collection<County> counties;
 
     private OpenLayersMap openLayersMap = new OpenLayersMap();
     private Div openLayersMapDiv = new Div();
 
     Button clearArea = new Button("Clear Area");
 
-    public AreaOfConcernLayout(Collection<String> states, Collection<String> counties) {
+    public AreaOfConcernLayout(Collection<String> states, Collection<County> counties) {
         this.counties = counties;
 
         eventAddressDialog = new AddressDialog(states);
@@ -71,15 +77,17 @@ public class AreaOfConcernLayout extends VerticalLayout implements ValidatableFo
         });
     }
 
-    public void setEventAddress(String address) {
-        eventAddress.setText(address);
+    public void setEventAddress(Address address) {
+        eventAddress.setText(address.getAddress1() + ", " + address.getCity() + ", " + address.getState() + " "
+                + address.getZipCode());
+
+        eventAddressDialog.setAddress(address);
     }
 
     private FormLayout createFormLayout() {
 
         openLayersMapDiv.add(openLayersMap);
         openLayersMapDiv.setWidth("100%");
-        openLayersMapDiv.setHeight("75vh");
 
         FormLayout formLayout = new FormLayout();
         formLayout.add(type, 2);
@@ -90,7 +98,9 @@ public class AreaOfConcernLayout extends VerticalLayout implements ValidatableFo
         formLayout.add(countyComboBox, 2);
         formLayout.add(radius, 2);
         formLayout.add(clearArea, 2);
+        formLayout.add(polygonCoordinates, 2);
         formLayout.add(openLayersMapDiv, 2);
+
         return formLayout;
     }
 
@@ -108,6 +118,10 @@ public class AreaOfConcernLayout extends VerticalLayout implements ValidatableFo
         eventAddressDialog.setOnSave(address -> {
             eventAddress.setText(address.getAddress1() + ", " + address.getCity() + ", " + address.getState() + " "
                     + address.getZipCode());
+
+            binder.setBean(binder.getBean());
+
+            eventAddressDialog.close();
         });
 
         type.addValueChangeListener(event -> {
@@ -120,11 +134,15 @@ public class AreaOfConcernLayout extends VerticalLayout implements ValidatableFo
             }
         });
 
+        clearArea.addClickListener(event -> {
+            openLayersMap.clear();
+            polygonCoordinates.clear();
+        });
+
         radius.addValueChangeListener(event -> {
             openLayersMap.setRadius(Double.parseDouble(event.getValue().split(" ")[0]));
         });
 
-        // Use Java lambda expressions to handle custom events
         openLayersMap.getElement().addEventListener("point-click", event -> {
             double x = event.getEventData().getNumber("event.detail.coordinate[0]");
             double y = event.getEventData().getNumber("event.detail.coordinate[1]");
@@ -136,22 +154,21 @@ public class AreaOfConcernLayout extends VerticalLayout implements ValidatableFo
             JsonObject eventData = event.getEventData();
             JsonArray outerRing = eventData.getArray("event.detail.coords[0]");
             handlePolygonComplete(outerRing);
+
+            handlePolygonComplete(outerRing);
+
         }).addEventData("event.detail.coords[0]");
 
     }
 
     private void handlePolygonComplete(JsonArray outerRing) {
-        StringBuilder coordsBuilder = new StringBuilder("Polygon Coordinates: ");
-        for (int i = 0; i < outerRing.length(); i++) {
-            JsonArray point = outerRing.getArray(i);
-            double x = point.getNumber(0);
-            double y = point.getNumber(1);
-            coordsBuilder.append(String.format("[%f, %f], ", x, y));
-        }
-        System.out.println(coordsBuilder.toString());
+        polygonCoordinates.setValue(outerRing.toJson());
+
+        logger.debug("Polygon drawing complete with coordinates: " + outerRing.toJson());
     }
 
     private void configureComponents() {
+        polygonCoordinates.setVisible(false);
 
         configureDialog();
 
@@ -160,7 +177,16 @@ public class AreaOfConcernLayout extends VerticalLayout implements ValidatableFo
         type.setItems("Point", "County/Parish/Borough", "Custom Area");
 
         radius.setItems("1 mi", "2 mi", "5 mi", "10 mi", "20 mi", "50 mi");
+
         countyComboBox.setItems(counties);
+        countyComboBox.setItemLabelGenerator(County::getName);
+
+        countyComboBox.addValueChangeListener(event -> {
+            if (event.getValue() != null) {
+                polygonCoordinates.setValue(event.getValue().getPolygonCoordinates());
+                openLayersMap.displayPolygon(event.getValue().getPolygonCoordinates());
+            }
+        });
 
         binder.addValueChangeListener(event -> {
             if (valueChangeListener != null && binder.getBean() != null && binder.isValid()) {
@@ -173,14 +199,18 @@ public class AreaOfConcernLayout extends VerticalLayout implements ValidatableFo
     private void updateVisibilityBasedOnType(String typeValue) {
         boolean isPoint = "Point".equals(typeValue);
         boolean isCounty = "County/Parish/Borough".equals(typeValue);
+        boolean isCustomArea = "Custom Area".equals(typeValue);
 
         latitude.setVisible(isPoint);
         longitude.setVisible(isPoint);
-        countyComboBox.setVisible(isCounty);
-
         radius.setVisible(isPoint);
 
-        clearArea.setVisible("Custom Area".equals(typeValue));
+        countyComboBox.setVisible(isCounty);
+        if (!isCounty) {
+            countyComboBox.clear();
+        }
+
+        clearArea.setVisible(isCustomArea);
     }
 
     private void configureDialog() {
@@ -191,6 +221,22 @@ public class AreaOfConcernLayout extends VerticalLayout implements ValidatableFo
         binder.forField(type)
                 .asRequired("Type is required")
                 .bind(AreaOfConcern::getType, AreaOfConcern::setType);
+
+        // bind the address fields from the eventAddressDialog
+        binder.forField(eventAddressDialog.getAddress1())
+                .bind(bean -> bean.getAddress().getAddress1(), (bean, value) -> bean.getAddress().setAddress1(value));
+
+        binder.forField(eventAddressDialog.getAddress2())
+                .bind(bean -> bean.getAddress().getAddress2(), (bean, value) -> bean.getAddress().setAddress2(value));
+
+        binder.forField(eventAddressDialog.getCity())
+                .bind(bean -> bean.getAddress().getCity(), (bean, value) -> bean.getAddress().setCity(value));
+
+        binder.forField(eventAddressDialog.getState())
+                .bind(bean -> bean.getAddress().getState(), (bean, value) -> bean.getAddress().setState(value));
+
+        binder.forField(eventAddressDialog.getZipCode())
+                .bind(bean -> bean.getAddress().getZipCode(), (bean, value) -> bean.getAddress().setZipCode(value));
 
         binder.bindInstanceFields(this);
     }
@@ -230,5 +276,8 @@ public class AreaOfConcernLayout extends VerticalLayout implements ValidatableFo
     public void addValueChangeListener(Consumer<AreaOfConcern> valueChangeListener) {
         this.valueChangeListener = valueChangeListener;
     }
+
+
+ 
 
 }

@@ -3,6 +3,7 @@ package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.view
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -12,8 +13,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.validator.StringLengthValidator;
-
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.eventinformation.Address;
 
 public class AddressDialog extends Dialog {
     private final TextField address1 = new TextField("Address 1");
@@ -30,7 +29,9 @@ public class AddressDialog extends Dialog {
         binder.setBean(new Address());
 
         setupBinder();
+
         VerticalLayout layout = new VerticalLayout(address1, address2, city, state, zipCode, save);
+
         add(layout);
 
         state.setItems(states);
@@ -76,5 +77,27 @@ public class AddressDialog extends Dialog {
     public void setOnSave(Consumer<Address> onSave) {
         this.onSaveConsumer = onSave;
     }
+
+    public TextField getAddress1() {
+        return address1;
+    }
+
+    public TextField getAddress2() {
+        return address2;
+    }
+
+    public TextField getCity() {
+        return city;
+    }
+
+    public ComboBox<String> getState() {
+        return state;
+    }
+
+    public TextField getZipCode() {
+        return zipCode;
+    }
+
+  
 
 }

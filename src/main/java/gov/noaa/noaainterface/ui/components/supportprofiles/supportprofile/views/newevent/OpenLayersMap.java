@@ -1,5 +1,8 @@
 package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -7,6 +10,7 @@ import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.dom.Element;
+
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 
@@ -15,6 +19,7 @@ import elemental.json.JsonObject;
 @NpmPackage(value = "ol", version = "7.5.1")
 @NpmPackage(value = "ol-contextmenu", version = "5.3.0")
 public class OpenLayersMap extends LitTemplate {
+    private static final Logger logger = LoggerFactory.getLogger(OpenLayersMap.class);
 
     @Id("map")
     private Element mapElement;
@@ -41,11 +46,11 @@ public class OpenLayersMap extends LitTemplate {
     }
 
     private void handlePointClick(double x, double y) {
-        System.out.println("Point clicked at coordinates: [" + x + ", " + y + "]");
+        logger.debug("Point clicked at x: " + x + ", y: " + y);
     }
 
     private void handlePolygonComplete(JsonArray coords) {
-        System.out.println("Polygon drawing complete with coordinates: " + coords.toJson());
+        logger.debug("Polygon drawing complete with coordinates: " + coords.toJson());
     }
 
     public void toggleMode(String mode) {
@@ -56,13 +61,22 @@ public class OpenLayersMap extends LitTemplate {
         getElement().callJsFunction("setRadius", radiusInMiles);
     }
 
+    public void clear() {
+        getElement().callJsFunction("clear");
+    }
+
     @ClientCallable
     public void drawingStarted() {
-        System.out.println("Drawing started on the map");
+        logger.debug("Drawing started on the map");
     }
 
     @ClientCallable
     public void drawingFinished() {
-        System.out.println("Drawing finished on the map");
+        logger.debug("Drawing finished on the map");
     }
+
+    public void displayPolygon(String polygonCoordinates) {
+        getElement().callJsFunction("displayPolygon", polygonCoordinates);
+    }
+
 }

@@ -1,18 +1,18 @@
 package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
 
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.eventinformation.Address;
-
 public class AreaOfConcern {
 
     private String type;
 
-    private Address address;
+    private Address address = new Address();
 
     private double latitude;
 
     private double longitude;
 
     private String radius;
+
+    private String polygonCoordinates;
 
     public String getType() {
         return type;
@@ -54,4 +54,23 @@ public class AreaOfConcern {
         this.radius = radius;
     }
 
+    public String getPolygonCoordinates() {
+        return polygonCoordinates;
+    }
+
+    public void setPolygonCoordinates(String json) {
+        this.polygonCoordinates = json;
+    }
+
+    @Override
+    public String toString() {
+        return "AreaOfConcern{" +
+                "type='" + type + '\'' +
+                ", address=" + address +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", radius='" + radius + '\'' +
+                ", polygonCoordinates='" + polygonCoordinates + '\'' +
+                '}';
+    }
 }

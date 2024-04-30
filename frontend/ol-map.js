@@ -9,9 +9,12 @@ import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import Circle from 'ol/geom/Circle';
+import Polygon from 'ol/geom/Polygon';
 import { Style, Fill, Stroke, Icon } from 'ol/style';
 import { fromLonLat } from 'ol/proj';
 import Draw from 'ol/interaction/Draw'; // Import Draw interaction
+import { isEmpty } from 'ol/extent';
+import GeoJSON from 'ol/format/GeoJSON';
 
 class OlMap extends LitElement {
   static get properties() {
@@ -83,7 +86,9 @@ class OlMap extends LitElement {
       target: this.renderRoot.querySelector('#map'),
       layers: [new TileLayer({ source: new OSM() }), this.vectorLayer],
       view: new View({
-        center: fromLonLat([0, 0]),
+
+        // Zoom to the united states
+        center: fromLonLat([-98.35, 39.5]),
         zoom: 2
       })
     });
@@ -144,6 +149,46 @@ class OlMap extends LitElement {
   setRadius(radiusInMiles) {
     this.radiusInMiles = radiusInMiles;
   }
+
+  clear() {
+    this.vectorSource.clear();
+  }
+
+  displayPolygon(geoJsonString) {
+    console.log('Displaying polygon from GeoJSON:', geoJsonString);
+
+    // Parse the GeoJSON string
+    const geoJsonObject = JSON.parse(geoJsonString);
+
+    // Initialize a GeoJSON reader with coordinate transformation
+    const geoJsonFormat = new GeoJSON({
+      featureProjection: 'EPSG:3857', // assuming the map uses this projection
+      dataProjection: 'EPSG:4326'     // assuming the GeoJSON uses geographic coordinates
+    });
+
+    // Read the GeoJSON object into OpenLayers Feature
+    const features = geoJsonFormat.readFeatures(geoJsonObject);
+
+    // Clear existing features and add new ones
+    this.vectorSource.clear();
+    this.vectorSource.addFeatures(features);
+
+    // If there are features, center the map on the first feature's extent
+    if (features.length > 0) {
+      const polygonExtent = features[0].getGeometry().getExtent();
+      if (!isEmpty(polygonExtent)) {
+        this.map.getView().fit(polygonExtent, { padding: [50, 50, 50, 50], duration: 500 });
+      } else {
+        console.error('Invalid polygon extent:', polygonExtent);
+      }
+    } else {
+      console.error('No features found in GeoJSON');
+    }
+  }
+
+
+
+
 
   render() {
     return html`<div id="map"></div>`;

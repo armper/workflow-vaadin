@@ -1,10 +1,12 @@
 package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.lumo.LumoUtility.Overflow;
@@ -17,6 +19,9 @@ public class WorkflowPage<T> extends VerticalLayout {
     private final String title;
     private ValidatableForm<T> content;
 
+    private Button discardDraft = new Button("Discard Draft");
+    private Button saveAndClose = new Button("Save and Close");
+
     public WorkflowPage(String title, ValidatableForm<T> content) {
         this.title = title;
         this.content = content;
@@ -26,8 +31,17 @@ public class WorkflowPage<T> extends VerticalLayout {
         // add scrollbars for overlfow
         addClassNames(Overflow.AUTO);
 
-        add(content.getComponent());
-        
+        H2 titleComponent = new H2(title);
+        Span spacer = new Span();
+        HorizontalLayout buttonLayout = new HorizontalLayout(titleComponent, spacer, discardDraft, saveAndClose);
+        // buttons all the way to the right of the page
+        buttonLayout.setAlignItems(Alignment.END);
+        buttonLayout.setWidthFull();
+        buttonLayout.setFlexGrow(1, spacer);
+
+
+        add(buttonLayout, content.getComponent());
+
     }
 
     public String getTitle() {
@@ -55,7 +69,5 @@ public class WorkflowPage<T> extends VerticalLayout {
     public void addValueChangeListener(Consumer<T> object) {
         content.addValueChangeListener(object);
     }
-
-   
 
 }
