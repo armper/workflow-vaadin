@@ -6,6 +6,8 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.shared.Registration;
@@ -33,12 +35,15 @@ public class WorkflowPage<T> extends VerticalLayout {
 
         H2 titleComponent = new H2(title);
         Span spacer = new Span();
+
+        discardDraft.setIcon(new Icon(VaadinIcon.CLOSE));
+        saveAndClose.setIcon(new Icon(VaadinIcon.FOLDER_OPEN_O));
+
         HorizontalLayout buttonLayout = new HorizontalLayout(titleComponent, spacer, discardDraft, saveAndClose);
         // buttons all the way to the right of the page
         buttonLayout.setAlignItems(Alignment.END);
         buttonLayout.setWidthFull();
         buttonLayout.setFlexGrow(1, spacer);
-
 
         add(buttonLayout, content.getComponent());
 

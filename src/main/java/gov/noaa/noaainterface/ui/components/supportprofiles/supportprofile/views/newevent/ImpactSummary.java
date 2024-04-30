@@ -4,25 +4,23 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class ImpactSummary extends VerticalLayout {
 
-    private final Span level = new Span();
-    private final Span risk = new Span();
-    private final Span impactStatement = new Span();
+    private final Span levelSpan = new Span();
+    private final Span riskSpan = new Span();
+    private final Span impactStatementSpan = new Span();
     private Button selectButton = new Button("Select");
 
     public ImpactSummary(String level, String risk, String impactStatement) {
-        // bold this.level
-        this.level.getStyle().set("font-weight", "bold");
-        this.level.setText(level + ":");
-        this.risk.getStyle().set("font-weight", "bold");
-        this.risk.setText(risk);
-        this.impactStatement.setText(impactStatement);
+        levelSpan.getStyle().set("font-weight", "bold");
+        levelSpan.setText(level + ":");
+        riskSpan.getStyle().set("font-weight", "bold");
+        riskSpan.setText(risk);
+        impactStatementSpan.setText(impactStatement);
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout(this.level, this.risk);
-        add(horizontalLayout, this.impactStatement, selectButton);
+        HorizontalLayout horizontalLayout = new HorizontalLayout(this.levelSpan, this.riskSpan);
+        add(horizontalLayout, this.impactStatementSpan, selectButton);
     }
 
     public Button getSelectButton() {
@@ -30,6 +28,6 @@ public class ImpactSummary extends VerticalLayout {
     }
 
     public String toString() {
-        return level.getText() + " " + risk.getText() + " " + impactStatement.getText();
+        return levelSpan.getText() + " " + riskSpan.getText() + " " + impactStatementSpan.getText();
     }
 }

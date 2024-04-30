@@ -27,28 +27,39 @@ public class WeatherThresholdLayout extends VerticalLayout implements Validatabl
     private ThresholdsDialog thresholdsDialog;
     private final List<String> weatherHazards = new ArrayList<>();
 
+    private final ImpactTabs impactTabs = new ImpactTabs();
+
     List<Impact> impacts = new ArrayList<>();
+
+    private String selectedWeatherHazard;
 
     public WeatherThresholdLayout(List<String> initialWeatherHazards) {
         thresholdsDialog = new ThresholdsDialog(impacts);
 
         thresholdsDialog.setSaveImpactListener(impact -> {
-            onSaveImpactListner(impact);
+            onSaveImpactListener(impact);
         });
 
         this.weatherHazards.addAll(initialWeatherHazards);
         customHazardLayout.setVisible(false);
         weatherHazardComboBox.setItems(weatherHazards);
+        weatherHazardComboBox.setPlaceholder("Select");
 
-        add(instructions, new HorizontalLayout(weatherHazardComboBox, customHazardLayout));
+        add(instructions, new HorizontalLayout(weatherHazardComboBox, customHazardLayout), impactTabs);
         setupEventHandlers();
     }
 
-    private void onSaveImpactListner(Impact impact) {
+    private void onSaveImpactListener(Impact impact) {
         impacts.add(impact);
+        impactTabs.add(weatherHazardComboBox.getValue(), new ImpactCard(impact));
+
+        // Reset the ComboBox after adding an impact. But also store what was selected.
+        selectedWeatherHazard = weatherHazardComboBox.getValue();
+        weatherHazardComboBox.clear();
+
         thresholdsDialog = new ThresholdsDialog(impacts);
         thresholdsDialog.setSaveImpactListener(newImpact -> {
-            onSaveImpactListner(newImpact);
+            onSaveImpactListener(newImpact);
         });
     }
 
@@ -68,11 +79,25 @@ public class WeatherThresholdLayout extends VerticalLayout implements Validatabl
                 weatherHazardComboBox.setValue(customHazardName.getValue());
             }
             showThresholdsModal();
+
         });
+
+        impactTabs.addImpactCardEditListener(listener -> {
+            thresholdsDialog = new ThresholdsDialog(impacts);
+            thresholdsDialog.setImpact(listener.getImpactCard().getImpact());
+            thresholdsDialog.setSaveImpactListener(newImpact -> {
+                onSaveImpactListener(newImpact);
+            });
+
+            thresholdsDialog.setTitle(selectedWeatherHazard);
+            thresholdsDialog.open();
+        });
+
     }
 
     private void showThresholdsModal() {
         thresholdsDialog.setTitle(weatherHazardComboBox.getValue());
+        thresholdsDialog.setImpact(new Impact());
         thresholdsDialog.open();
     }
 

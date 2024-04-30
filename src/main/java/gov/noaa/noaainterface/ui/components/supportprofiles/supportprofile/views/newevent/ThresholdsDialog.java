@@ -1,26 +1,19 @@
 package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Hr;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -36,7 +29,7 @@ public class ThresholdsDialog extends Dialog {
     private final TextField customLabel = new TextField("Custom Label");
     private final TextArea impactStatement = new TextArea("Impact Statement");
     private final TextArea actions = new TextArea("Actions");
-    private TabManager tabManager = new TabManager(); // Use the new TabManager component
+    private TabManager tabManager = new TabManager();
 
     private final Button saveImpactButton = new Button("Save Impact");
     private final Button discardImpactButton = new Button("Discard Impact");
@@ -49,7 +42,6 @@ public class ThresholdsDialog extends Dialog {
     private Consumer<Impact> saveImpactListener;
     private Impact impact = new Impact();
     private final List<Impact> impacts;
-    private final Map<Tab, Component> tabsToPages = new HashMap<>();
     private final Div pageContainer = new Div();
 
     public void setSaveImpactListener(Consumer<Impact> saveImpactListener) {
@@ -58,6 +50,11 @@ public class ThresholdsDialog extends Dialog {
 
     public void setTitle(String title) {
         this.title.setText("Impact for " + title);
+    }
+
+    public void setImpact(Impact impact) {
+        this.impact = impact;
+        impactBinder.readBean(impact);
     }
 
     public ThresholdsDialog(List<Impact> impacts) {
@@ -76,7 +73,11 @@ public class ThresholdsDialog extends Dialog {
         // Filter logic
         searchRecentImpacts.addValueChangeListener(e -> filterImpacts());
         recentLevel.addValueChangeListener(e -> filterImpacts());
+        recentLevel.setPlaceholder("Select");
+        recentLevel.setClearButtonVisible(true);
         recentRisk.addValueChangeListener(e -> filterImpacts());
+        recentRisk.setPlaceholder("Select");
+        recentRisk.setClearButtonVisible(true);
 
         configureComponents();
         layoutComponents();
@@ -105,8 +106,7 @@ public class ThresholdsDialog extends Dialog {
                 impactBinder.setBean(impact);
             });
             filteredImpactsLayout.add(impactSummary);
-            Hr hr = new Hr();
-            filteredImpactsLayout.add(hr);
+            filteredImpactsLayout.add(new Hr());
         });
     }
 
@@ -132,6 +132,13 @@ public class ThresholdsDialog extends Dialog {
     }
 
     private void configureComponents() {
+        searchRecentImpacts.setClearButtonVisible(true);
+
+        level.setPlaceholder("Select");
+        level.setClearButtonVisible(true);
+        risk.setPlaceholder("Select");
+        risk.setClearButtonVisible(true);
+
         impactStatement.setWidthFull();
         actions.setWidthFull();
 
@@ -150,6 +157,8 @@ public class ThresholdsDialog extends Dialog {
                 risk.setValue(value);
             }
         });
+
+        saveImpactButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
     }
 
