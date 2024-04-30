@@ -12,6 +12,8 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -21,44 +23,44 @@ import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.edito
 public class WeatherThresholdLayout extends VerticalLayout implements ValidatableForm<WeatherThreshold> {
     private final Paragraph instructions = new Paragraph(
             "Set weather condition thresholds for the forecaster to be aware of. You must add at least one impact.");
-
     private final ComboBox<String> weatherHazardComboBox = new ComboBox<>("Weather Hazard");
     private final TextField customHazardName = new TextField("Custom Hazard Name");
     private final Button addHazardButton = new Button("Add Hazard", new Icon(VaadinIcon.PLUS));
     private final HorizontalLayout customHazardLayout = new HorizontalLayout(customHazardName, addHazardButton);
     private ThresholdsDialog thresholdsDialog;
     private final List<String> weatherHazards = new ArrayList<>();
-
     private final ImpactTabs impactTabs = new ImpactTabs();
 
-    Set<Impact> impacts = new HashSet<>();
+    private Set<Impact> impacts = new HashSet<>();
 
     public WeatherThresholdLayout(List<String> initialWeatherHazards) {
-        thresholdsDialog = new ThresholdsDialog(impacts);
+        super();
+        initializeComponents(initialWeatherHazards);
+        setupEventHandlers();
+    }
 
-        thresholdsDialog.setSaveImpactListener(impact -> {
-            onSaveImpactListener(impact);
-        });
-
-        this.weatherHazards.addAll(initialWeatherHazards);
+    private void initializeComponents(List<String> initialWeatherHazards) {
+        weatherHazards.addAll(initialWeatherHazards);
         customHazardLayout.setVisible(false);
         weatherHazardComboBox.setItems(weatherHazards);
         weatherHazardComboBox.setPlaceholder("Select");
 
+        thresholdsDialog = new ThresholdsDialog(impacts);
+        thresholdsDialog.setSaveImpactListener(this::onSaveImpactListener);
+
         add(instructions, new HorizontalLayout(weatherHazardComboBox, customHazardLayout), impactTabs);
-        setupEventHandlers();
     }
 
     private void onSaveImpactListener(Impact impact) {
         impacts.add(impact);
         impactTabs.addOrUpdateImpact(impact);
+        refreshDialog();
+    }
 
+    private void refreshDialog() {
         weatherHazardComboBox.clear();
-
         thresholdsDialog = new ThresholdsDialog(impacts);
-        thresholdsDialog.setSaveImpactListener(newImpact -> {
-            onSaveImpactListener(newImpact);
-        });
+        thresholdsDialog.setSaveImpactListener(this::onSaveImpactListener);
     }
 
     private void setupEventHandlers() {
@@ -72,44 +74,48 @@ public class WeatherThresholdLayout extends VerticalLayout implements Validatabl
 
         addHazardButton.addClickListener(event -> {
             if ("Custom Hazard".equals(weatherHazardComboBox.getValue())) {
-                weatherHazards.add(customHazardName.getValue());
+                String customName = customHazardName.getValue();
+                weatherHazards.add(customName);
                 weatherHazardComboBox.setItems(weatherHazards);
-                weatherHazardComboBox.setValue(customHazardName.getValue());
+                weatherHazardComboBox.setValue(customName);
             }
             showThresholdsModal();
-
         });
 
-        impactTabs.addImpactCardEditListener(listener -> {
-            thresholdsDialog = new ThresholdsDialog(impacts);
-            thresholdsDialog.setImpact(listener.getImpactCard().getImpact());
-            thresholdsDialog.setSaveImpactListener(newImpact -> {
-                onSaveImpactListener(newImpact);
-            });
-
+        impactTabs.addImpactCardEditListener(event -> {
+            Impact impact = event.getImpactCard().getImpact();
+            thresholdsDialog.setImpact(impact);
             thresholdsDialog.open();
         });
-
     }
 
     private void showThresholdsModal() {
-        thresholdsDialog.setImpact(new Impact(weatherHazardComboBox.getValue()));
+        Impact newImpact = new Impact(weatherHazardComboBox.getValue());
+        thresholdsDialog.setImpact(newImpact);
         thresholdsDialog.open();
     }
 
     @Override
     public boolean isValid() {
-        throw new UnsupportedOperationException("Unimplemented method 'isValid'");
+        return !impacts.isEmpty();
     }
 
     @Override
     public String getErrorMessage() {
-        throw new UnsupportedOperationException("Unimplemented method 'getErrorMessage'");
+        if (isValid()) {
+            return ""; // No error if the form is valid
+        } else {
+            return "At least one impact must be added.";
+        }
     }
 
     @Override
     public void showErrors() {
-        throw new UnsupportedOperationException("Unimplemented method 'showErrors'");
+        if (!isValid()) {
+            Notification errorNotification = new Notification(getErrorMessage(), 3000);
+            errorNotification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            errorNotification.open();
+        }
     }
 
     @Override
@@ -119,7 +125,9 @@ public class WeatherThresholdLayout extends VerticalLayout implements Validatabl
 
     @Override
     public WeatherThreshold getData() {
-        throw new UnsupportedOperationException("Unimplemented method 'getData'");
+        WeatherThreshold threshold = new WeatherThreshold();
+        threshold.setImpacts(new ArrayList<>(impacts));
+        return threshold;
     }
 
     @Override
