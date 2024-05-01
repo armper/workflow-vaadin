@@ -1,4 +1,4 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

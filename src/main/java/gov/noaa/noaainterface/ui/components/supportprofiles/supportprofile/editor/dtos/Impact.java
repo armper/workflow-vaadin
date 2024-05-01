@@ -1,8 +1,10 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class Impact {
     private UUID id;
@@ -92,7 +94,7 @@ public class Impact {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 
 }

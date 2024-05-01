@@ -1,4 +1,4 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent;
 
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -11,6 +11,7 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.Binder;
 
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.SupportSchedule;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.interfaces.ValidatableForm;
 
 public class SupportScheduleLayout extends VerticalLayout implements ValidatableForm<SupportSchedule> {

@@ -1,6 +1,9 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.events;
 
 import com.vaadin.flow.component.ComponentEvent;
+
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent.ImpactCard;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent.ImpactTabs;
 
 public class ImpactCardEditEvent extends ComponentEvent<ImpactTabs> {
     private ImpactCard impactCard;

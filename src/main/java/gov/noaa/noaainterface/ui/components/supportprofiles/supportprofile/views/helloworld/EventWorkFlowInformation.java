@@ -1,8 +1,9 @@
 package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.helloworld;
 
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.AreaOfConcern;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.Partner;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.Recipients;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.AreaOfConcern;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Partner;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Recipients;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.WeatherThreshold;
 
 public class EventWorkFlowInformation {
 
@@ -11,6 +12,8 @@ public class EventWorkFlowInformation {
     private Partner requestingPartnerInformation;
 
     private AreaOfConcern areaOfConcern;
+
+    private WeatherThreshold weatherThreshold;
 
     public Recipients getRecipients() {
         return recipients;
@@ -34,6 +37,14 @@ public class EventWorkFlowInformation {
 
     public void setAreaOfConcern(AreaOfConcern areaOfConcern) {
         this.areaOfConcern = areaOfConcern;
+    }
+
+    public WeatherThreshold getWeatherThreshold() {
+        return weatherThreshold;
+    }
+
+    public void setWeatherThreshold(WeatherThreshold weatherThreshold) {
+        this.weatherThreshold = weatherThreshold;
     }
 
 }

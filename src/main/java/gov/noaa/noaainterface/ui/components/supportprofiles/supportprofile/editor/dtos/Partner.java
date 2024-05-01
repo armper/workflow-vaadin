@@ -1,4 +1,4 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -22,6 +22,9 @@ import com.vaadin.flow.data.binder.Binder;
 
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Address;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.AreaOfConcern;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.County;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.interfaces.ValidatableForm;
 
 public class AreaOfConcernLayout extends VerticalLayout implements ValidatableForm<AreaOfConcern> {

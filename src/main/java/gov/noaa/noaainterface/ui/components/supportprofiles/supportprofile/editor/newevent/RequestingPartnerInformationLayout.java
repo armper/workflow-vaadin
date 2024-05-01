@@ -1,4 +1,4 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -14,6 +14,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Partner;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.interfaces.ValidatableForm;
 
 public class RequestingPartnerInformationLayout extends VerticalLayout implements ValidatableForm<Partner> {

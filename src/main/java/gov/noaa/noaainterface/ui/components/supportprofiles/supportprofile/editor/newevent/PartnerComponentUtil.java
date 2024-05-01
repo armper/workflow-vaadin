@@ -1,4 +1,4 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -6,6 +6,8 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexDirection;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Partner;
 
 public class PartnerComponentUtil {
     public static FlexLayout createPartnerComponent(Partner person) {

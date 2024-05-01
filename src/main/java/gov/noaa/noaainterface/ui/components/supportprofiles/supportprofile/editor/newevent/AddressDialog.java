@@ -1,4 +1,4 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -8,11 +8,14 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.validator.StringLengthValidator;
+
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Address;
 
 public class AddressDialog extends Dialog {
     private final TextField address1 = new TextField("Address 1");
@@ -44,7 +47,9 @@ public class AddressDialog extends Dialog {
                 }
                 close();
             } catch (ValidationException e) {
-                Notification.show("Please correct the errors before saving.");
+                Notification errorNotification = new Notification("Please correct the errors before saving.", 3000);
+                errorNotification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                errorNotification.open();
             }
         });
     }
@@ -97,7 +102,5 @@ public class AddressDialog extends Dialog {
     public TextField getZipCode() {
         return zipCode;
     }
-
-  
 
 }

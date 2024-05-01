@@ -1,4 +1,4 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +14,9 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Impact;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.events.ImpactCardEditEvent;
 
 public class ImpactTabs extends VerticalLayout {
     private final Logger logger = org.slf4j.LoggerFactory.getLogger(ImpactTabs.class);

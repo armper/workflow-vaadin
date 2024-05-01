@@ -1,4 +1,4 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newimpact;
 
 import java.util.List;
 import java.util.Set;
@@ -12,6 +12,8 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -19,6 +21,9 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Impact;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent.ImpactSummary;
 
 public class ThresholdsDialog extends Dialog {
     private final H1 title = new H1();
@@ -126,6 +131,7 @@ public class ThresholdsDialog extends Dialog {
         filteredImpacts.forEach(impact -> {
             ImpactSummary impactSummary = new ImpactSummary(impact.getLevel(), impact.getRisk(),
                     impact.getImpactStatement());
+            impactSummary.setMaxWidth("30rem");
             impactSummary.getSelectButton().addClickListener(e -> impactBinder.setBean(impact));
             filteredImpactsLayout.add(impactSummary, new Hr());
         });
@@ -155,6 +161,10 @@ public class ThresholdsDialog extends Dialog {
         if (impactBinder.writeBeanIfValid(impact)) {
             saveImpactListener.accept(impact);
             close();
+        } else {
+            Notification errorNotification = new Notification("Please fill out all required fields", 3000);
+            errorNotification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            errorNotification.open();
         }
     }
 

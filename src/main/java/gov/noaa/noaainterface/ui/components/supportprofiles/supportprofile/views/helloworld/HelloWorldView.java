@@ -13,20 +13,20 @@ import com.vaadin.flow.router.RouteAlias;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.WorkFlow;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.WorkflowPage;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.WorkflowSection;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.AreaOfConcern;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.County;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.EventInformation;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Partner;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Recipients;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.SupportSchedule;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.WeatherThreshold;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.interfaces.ValidatableForm;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.AreaOfConcern;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.AreaOfConcernLayout;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.County;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.EventInformation;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.EventInformationLayout;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.Partner;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.Recipients;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.RecipientsLayout;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.RequestingPartnerInformationLayout;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.SupportSchedule;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.SupportScheduleLayout;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.WeatherThreshold;
-import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent.WeatherThresholdLayout;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent.AreaOfConcernLayout;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent.EventInformationLayout;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent.RecipientsLayout;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent.RequestingPartnerInformationLayout;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent.SupportScheduleLayout;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newimpact.WeatherThresholdLayout;
 
 @PageTitle("Hello World")
 @Route(value = "hello-world")
@@ -119,6 +119,12 @@ public class HelloWorldView extends HorizontalLayout {
                 WeatherThresholdLayout weatherThresholdLayout = new WeatherThresholdLayout(weatherHazards);
                 WorkflowPage<WeatherThreshold> weatherThresholdPage = new WorkflowPage<>("Weather Threshold",
                                 weatherThresholdLayout);
+
+                weatherThresholdPage.addValueChangeListener(listener -> {
+                        eventWorkFlowInformation.setWeatherThreshold(listener);
+                        System.out.println("Weather Threshold changed" + listener);
+                });
+
                 WorkflowSection impactWorkflowSection = new WorkflowSection("Impact", weatherThresholdPage);
 
                 // WorkFlow workFlow = new WorkFlow(eventWorflowSection, impactWorkflowSection);

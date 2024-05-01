@@ -1,4 +1,4 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent;
 
 import java.time.LocalTime;
 import java.util.Collection;
@@ -19,6 +19,7 @@ import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.PropertyId;
 
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.EventInformation;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.interfaces.ValidatableForm;
 
 public class EventInformationLayout extends VerticalLayout implements ValidatableForm<EventInformation> {

@@ -1,4 +1,4 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +27,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Partner;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Recipients;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.interfaces.ValidatableForm;
 
 public class RecipientsLayout extends VerticalLayout implements ValidatableForm<Recipients> {

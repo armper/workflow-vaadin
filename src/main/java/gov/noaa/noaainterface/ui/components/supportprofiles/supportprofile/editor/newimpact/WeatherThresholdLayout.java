@@ -1,4 +1,4 @@
-package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.views.newevent;
+package gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newimpact;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,7 +18,10 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.Impact;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.dtos.WeatherThreshold;
 import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.interfaces.ValidatableForm;
+import gov.noaa.noaainterface.ui.components.supportprofiles.supportprofile.editor.newevent.ImpactTabs;
 
 public class WeatherThresholdLayout extends VerticalLayout implements ValidatableForm<WeatherThreshold> {
     private final Paragraph instructions = new Paragraph(
@@ -32,6 +35,7 @@ public class WeatherThresholdLayout extends VerticalLayout implements Validatabl
     private final ImpactTabs impactTabs = new ImpactTabs();
 
     private Set<Impact> impacts = new HashSet<>();
+    private Consumer<WeatherThreshold> listener;
 
     public WeatherThresholdLayout(List<String> initialWeatherHazards) {
         super();
@@ -55,6 +59,10 @@ public class WeatherThresholdLayout extends VerticalLayout implements Validatabl
         impacts.add(impact);
         impactTabs.addOrUpdateImpact(impact);
         refreshDialog();
+
+        if (listener != null) {
+            listener.accept(getData());
+        }
     }
 
     private void refreshDialog() {
@@ -132,6 +140,6 @@ public class WeatherThresholdLayout extends VerticalLayout implements Validatabl
 
     @Override
     public void addValueChangeListener(Consumer<WeatherThreshold> listener) {
-        throw new UnsupportedOperationException("Unimplemented method 'addValueChangeListener'");
+        this.listener = listener;
     }
 }
