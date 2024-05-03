@@ -16,7 +16,7 @@ import Draw from 'ol/interaction/Draw'; // Import Draw interaction
 import { isEmpty } from 'ol/extent';
 import GeoJSON from 'ol/format/GeoJSON';
 
-class OlMap extends LitElement {
+class OlMapSupportProfiles extends LitElement {
   static get properties() {
     return {
       radiusInMiles: { type: Number },
@@ -195,4 +195,4 @@ class OlMap extends LitElement {
   }
 }
 
-customElements.define('ol-map', OlMap);
+customElements.define('ol-map-support-profiles', OlMapSupportProfiles);

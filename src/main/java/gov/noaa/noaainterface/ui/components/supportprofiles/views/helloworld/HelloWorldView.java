@@ -15,6 +15,7 @@ import gov.noaa.noaainterface.ui.components.supportprofiles.editor.WorkflowSecti
 import gov.noaa.noaainterface.ui.components.supportprofiles.editor.dtos.AreaOfConcern;
 import gov.noaa.noaainterface.ui.components.supportprofiles.editor.dtos.County;
 import gov.noaa.noaainterface.ui.components.supportprofiles.editor.dtos.EventInformation;
+import gov.noaa.noaainterface.ui.components.supportprofiles.editor.dtos.EventWorkFlowInformation;
 import gov.noaa.noaainterface.ui.components.supportprofiles.editor.dtos.Partner;
 import gov.noaa.noaainterface.ui.components.supportprofiles.editor.dtos.Recipients;
 import gov.noaa.noaainterface.ui.components.supportprofiles.editor.dtos.SupportSchedule;
@@ -111,7 +112,7 @@ public class HelloWorldView extends HorizontalLayout {
                 WorkflowPage<SupportSchedule> supportSchedulePage = new WorkflowPage<>("Support Schedule",
                                 supportScheduleLayout);
 
-                WorkflowSection eventWorflowSection = new WorkflowSection("Event",
+                WorkflowSection eventWorflowSection = new WorkflowSection("Event", areaOfConcernPage,
                                 requestingPartnerInformationPage,
                                 eventInformationPage, supportSchedulePage, areaOfConcernPage, recipientsPage);
 
@@ -126,8 +127,8 @@ public class HelloWorldView extends HorizontalLayout {
 
                 WorkflowSection impactWorkflowSection = new WorkflowSection("Impact", weatherThresholdPage);
 
-                // WorkFlow workFlow = new WorkFlow(eventWorflowSection, impactWorkflowSection);
-                WorkFlow workFlow = new WorkFlow(impactWorkflowSection);
+                WorkFlow workFlow = new WorkFlow(eventWorflowSection, impactWorkflowSection);
+                // WorkFlow workFlow = new WorkFlow(impactWorkflowSection);
 
                 add(workFlow);
         }
